@@ -1,10 +1,11 @@
 import React from 'react';
-import { Image } from './Image';
+//import { Image } from './Image';
 import { Swatches } from './Swatches';
 import { SearchInput } from './SearchInput';
 import { FileInput } from './UploadButton';
 import ColorThief from './ColorThief';
 import useImageColor from 'use-image-color';
+import { ColorExtractor } from '../ce';
 
 const IMAGE = 'https://i.imgur.com/OCyjHNF.jpg';
 
@@ -12,18 +13,18 @@ function Card(props) {
   const { colors } = useImageColor(props.url, {
     cors: true,
     colors: 6,
-    windowSize: 10,
+    windowSize: 16,
   });
   console.log(colors);
 
   return (
-    <div className="mesBottom">
+    <div className="display-swatches">
       {colors &&
         colors.map((p, i) => {
           return (
             <div
               key={`palette-${i}`}
-              className="bottomBlock"
+              className="swatches"
               style={{ background: p }}
             ></div>
           );
@@ -97,7 +98,7 @@ export class App extends React.Component {
   }
 
   thiefPalette(index) {
-    const data = this.colorThief.getPalette(this[`$img${index}`], 7);
+    const data = this.colorThief.getPalette(this[`$img${index}`], 6);
     data.shift();
     const rgb = this.colorThief.convertColorRgb(data);
     this.palettes[index] = rgb;
@@ -106,7 +107,7 @@ export class App extends React.Component {
 
   getItem(img, index, color, palette = []) {
     !color && this.thiefColor(img, index);
-
+    console.log(color);
     return (
       <div className="itemRoot" key={`img-${index}`}>
         <img
@@ -114,31 +115,28 @@ export class App extends React.Component {
             this[`$img${index}`] = dom;
           }}
           src={img}
+          style={{ display: 'none' }}
           onLoad={() => this.thiefPalette(index)}
         />
 
-        <div className="mes">
-          <div className="mesTop">
-            <div className="topBlock" style={{ background: color }}></div>
-          </div>
-          <div className="mesBottom">
-            {palette.map((p, i) => {
-              return (
-                <div
-                  key={`palette-${i}`}
-                  className="bottomBlock"
-                  style={{ background: p }}
-                ></div>
-              );
-            })}
-          </div>
+        <div className="display-swatches">
+          <div className="swatches" style={{ background: color }}></div>
+          {palette.map((p, i) => {
+            return (
+              <div
+                key={`palette-${i}`}
+                className="swatches"
+                style={{ background: p }}
+              ></div>
+            );
+          })}
         </div>
       </div>
     );
   }
 
   render() {
-    const { colors, palettes, localUrl } = this.state;
+    const { colors, palettes } = this.state;
 
     return (
       <div
@@ -148,19 +146,43 @@ export class App extends React.Component {
         }}
       >
         <div className="ttt">
-          <Image
-            error={this.state.hasError}
-            image={this.state.image}
+          <div
+            className="image-container"
+            style={{
+              background: `url(${this.state.image})  center / contain no-repeat`,
+              backgroundSize: '100%',
+            }}
+          ></div>
+          <ColorExtractor
             getColors={this.getColors}
-            onLoad={() => this.thiefPalette(0)}
             onError={(error) => this.setState({ hasError: true })}
-          />
+          >
+            <img src={this.state.image} style={{ display: 'none' }} />
+          </ColorExtractor>
           {this.state.colors.length > 0 ? (
             <Swatches colors={this.state.colors} />
           ) : null}
         </div>
-        {this.getItem(this.state.image, 0, colors[0], palettes[0])}
-        <Card url={this.state.image} />
+        <div className="ttt">
+          <div
+            className="image-container"
+            style={{
+              background: `url(${this.state.image})  center / contain no-repeat`,
+              backgroundSize: '100%',
+            }}
+          ></div>
+          {this.getItem(this.state.image, 0, colors[0], palettes[0])}
+        </div>
+        <div className="ttt">
+          <div
+            className="image-container"
+            style={{
+              background: `url(${this.state.image})  center / contain no-repeat`,
+              backgroundSize: '100%',
+            }}
+          ></div>
+          <Card url={this.state.image} />
+        </div>
 
         <SearchInput
           imagePath={this.state.image === IMAGE ? '' : this.state.image}

@@ -1,19 +1,20 @@
 import React from 'react';
 
 const renderSwatches = (type, colors) => {
+  console.log('fff=', colors);
   return colors.map((color, id) => {
-    const normalizeColorValue =
+    /*  const normalizeColorValue =
       Array.isArray(color) && type === 'rgb'
         ? `rgb(${color[0]}, ${color[1]}, ${color[2]})`
-        : color;
+        : color; */
 
     return (
-      <div key={id++} style={{ color }}>
+      <div key={id++}>
         <div
           className="swatches"
           style={{
-            backgroundColor: normalizeColorValue,
-            color: normalizeColorValue,
+            backgroundColor: color,
+            color: color,
           }}
         />
       </div>
