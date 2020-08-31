@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 
-import { Swatches } from './Swatches';
-import { SearchInput } from './SearchInput';
-import { FileInput } from './UploadButton';
-import ColorThief from './ColorThief';
-import useImageColor from 'use-image-color';
-import ColorExtractor from './ColorExtractor';
+import { Swatches } from "./Swatches";
+import { SearchInput } from "./SearchInput";
+import { FileInput } from "./UploadButton";
+import ColorThief from "./ColorThief";
+import useImageColor from "use-image-color";
+import ColorExtractor from "./ColorExtractor";
 
-const IMAGE = 'https://i.imgur.com/OCyjHNF.jpg';
+const IMAGE = "https://i.imgur.com/OCyjHNF.jpg";
 
 function Palette(props) {
   const { colors } = useImageColor(props.url, {
     cors: true,
-    colors: 6,
+    colors: 7,
     windowSize: 160,
   });
 
@@ -20,7 +20,7 @@ function Palette(props) {
     <div className="display-swatches">
       {colors &&
         colors.map((p, i) => {
-          if (p < '#fafafa')
+          if (p < "#fafafa")
             return (
               <div
                 key={`palette-${i}`}
@@ -42,14 +42,14 @@ export function App(props) {
   const imageRef = useRef();
 
   useEffect(() => {
-    const searchInput = document.getElementById('s-input');
+    const searchInput = document.getElementById("s-input");
 
     searchInput.focus();
 
-    const uploader = document.getElementById('uploader');
-    const button = document.getElementById('file-upload');
+    const uploader = document.getElementById("uploader");
+    const button = document.getElementById("file-upload");
 
-    button.addEventListener('click', (e) => {
+    button.addEventListener("click", (e) => {
       if (uploader) {
         uploader.click();
       }
@@ -84,7 +84,7 @@ export function App(props) {
   };
 
   const thiefPalette = (index) => {
-    const data = colorThief.getPalette(imageRef.current, 5);
+    const data = colorThief.getPalette(imageRef.current, 6);
     data.shift();
     const rgb = colorThief.convertColorRgb(data);
     let q = colors;
@@ -101,7 +101,7 @@ export function App(props) {
         <img
           ref={imageRef}
           src={img}
-          style={{ display: 'none' }}
+          style={{ display: "none" }}
           onLoad={() => thiefPalette(index)}
         />
 
@@ -125,22 +125,23 @@ export function App(props) {
     <div
       className="center-content"
       style={{
-        flexDirection: 'column',
+        flexDirection: "column",
       }}
     >
       <div className="ttt">
         <div
           className="image-container"
           style={{
-            background: `url(${image})  center / contain no-repeat`,
-            backgroundSize: '100%',
+            backgroundImage: `url(${image})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
         ></div>
         <ColorExtractor
           getColors={setColors}
           onError={(error) => setHasError(true)}
         >
-          <img src={image} style={{ display: 'none' }} />
+          <img src={image} style={{ display: "none" }} />
         </ColorExtractor>
         {colors.length > 0 ? <Swatches colors={colors} /> : null}
       </div>
@@ -148,8 +149,9 @@ export function App(props) {
         <div
           className="image-container"
           style={{
-            background: `url(${image})  center / contain no-repeat`,
-            backgroundSize: '100%',
+            backgroundImage: `url(${image})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
         ></div>
         {getItem(image, 0, colors[0], palettes[0])}
@@ -158,15 +160,16 @@ export function App(props) {
         <div
           className="image-container"
           style={{
-            background: `url(${image})  center / contain no-repeat`,
-            backgroundSize: '100%',
+            backgroundImage: `url(${image})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
         ></div>
         <Palette url={image} />
       </div>
 
       <SearchInput
-        imagePath={image === IMAGE ? '' : image}
+        imagePath={image === IMAGE ? "" : image}
         handleImage={handleImage}
         getColors={setColors}
       />
