@@ -1,7 +1,6 @@
 import React from 'react';
 
 const renderSwatches = (type, colors) => {
-  console.log('fff=', colors);
   return colors.map((color, id) => {
     /*  const normalizeColorValue =
       Array.isArray(color) && type === 'rgb'

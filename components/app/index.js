@@ -15,19 +15,19 @@ function Palette(props) {
     colors: 6,
     windowSize: 160,
   });
-  console.log(colors);
 
   return (
     <div className="display-swatches">
       {colors &&
         colors.map((p, i) => {
-          return (
-            <div
-              key={`palette-${i}`}
-              className="swatches"
-              style={{ background: p }}
-            ></div>
-          );
+          if (p < '#fafafa')
+            return (
+              <div
+                key={`palette-${i}`}
+                className="swatches"
+                style={{ background: p }}
+              ></div>
+            );
         })}
     </div>
   );
@@ -84,7 +84,7 @@ export function App(props) {
   };
 
   const thiefPalette = (index) => {
-    const data = colorThief.getPalette(imageRef.current, 6);
+    const data = colorThief.getPalette(imageRef.current, 5);
     data.shift();
     const rgb = colorThief.convertColorRgb(data);
     let q = colors;
@@ -95,9 +95,9 @@ export function App(props) {
 
   const getItem = (img, index, color, palette = []) => {
     !color && thiefColor(img, index);
-    console.log(color);
+
     return (
-      <div className="itemRoot" key={`img-${index}`}>
+      <>
         <img
           ref={imageRef}
           src={img}
@@ -117,7 +117,7 @@ export function App(props) {
             );
           })}
         </div>
-      </div>
+      </>
     );
   };
 
