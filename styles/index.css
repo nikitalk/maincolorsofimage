@@ -80,6 +80,7 @@ img {
   grid-template-columns: repeat(2, 1fr);
 
   justify-content: center;
+  margin-bottom: 50px;
 }
 
 footer {

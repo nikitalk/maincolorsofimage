@@ -1,6 +1,6 @@
-import React from 'react'
+import React from 'react';
 
-export const SearchInput = props => (
+export const SearchInput = (props) => (
   <input
     id="s-input"
     className="search-input"
@@ -8,5 +8,6 @@ export const SearchInput = props => (
     value={props.imagePath}
     placeholder="Enter a local or remote image url, or a blob url"
     onChange={props.handleImage}
+    style={{ display: 'none' }}
   />
-)
+);

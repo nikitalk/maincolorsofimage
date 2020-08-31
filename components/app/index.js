@@ -5,7 +5,7 @@ import { SearchInput } from './SearchInput';
 import { FileInput } from './UploadButton';
 import ColorThief from './ColorThief';
 import useImageColor from 'use-image-color';
-import { ColorExtractor } from '../ce';
+import ColorExtractor from './ColorExtractor';
 
 const IMAGE = 'https://i.imgur.com/OCyjHNF.jpg';
 
@@ -13,7 +13,7 @@ function Palette(props) {
   const { colors } = useImageColor(props.url, {
     cors: true,
     colors: 6,
-    windowSize: 16,
+    windowSize: 160,
   });
   console.log(colors);
 
@@ -61,10 +61,6 @@ export function App(props) {
   const uploadFiles = (e) => {
     setImage(window.URL.createObjectURL(e.target.files[0]));
     setHasError(false);
-  };
-
-  const getColors = (colors) => {
-    setHasEroor(false);
   };
 
   const handleImage = (e) => {
@@ -172,7 +168,7 @@ export function App(props) {
       <SearchInput
         imagePath={image === IMAGE ? '' : image}
         handleImage={handleImage}
-        getColors={getColors}
+        getColors={setColors}
       />
       <FileInput uploadFiles={uploadFiles} />
     </div>
