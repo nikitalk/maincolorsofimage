@@ -8,8 +8,12 @@
     "start": "next start"
   },
   "dependencies": {
+    "@vyppn/chameleon-react": "^1.0.1",
+    "color-thief-react": "^2.0.6",
     "next": "9.5.2",
+    "node-vibrant": "^3.1.5",
     "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "react-dom": "16.13.1",
+    "use-image-color": "0.0.9"
   }
 }
