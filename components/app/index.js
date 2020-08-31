@@ -1,5 +1,5 @@
-import React from 'react';
-//import { Image } from './Image';
+import React, { useState, useEffect, useRef } from 'react';
+
 import { Swatches } from './Swatches';
 import { SearchInput } from './SearchInput';
 import { FileInput } from './UploadButton';
@@ -9,7 +9,7 @@ import { ColorExtractor } from '../ce';
 
 const IMAGE = 'https://i.imgur.com/OCyjHNF.jpg';
 
-function Card(props) {
+function Palette(props) {
   const { colors } = useImageColor(props.url, {
     cors: true,
     colors: 6,
@@ -33,23 +33,15 @@ function Card(props) {
   );
 }
 
-export class App extends React.Component {
-  constructor(props) {
-    super(props);
+export function App(props) {
+  const colorThief = new ColorThief();
+  const [image, setImage] = useState(IMAGE);
+  const [colors, setColors] = useState({});
+  const [palettes, setPalettes] = useState({});
+  const [hasError, setHasError] = useState(false);
+  const imageRef = useRef();
 
-    this.colors = {};
-    this.palettes = {};
-    this.state = {
-      image: IMAGE,
-      colors: this.colors,
-      palettes: this.palettes,
-      hasError: false,
-    };
-
-    this.colorThief = new ColorThief();
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     const searchInput = document.getElementById('s-input');
 
     searchInput.focus();
@@ -64,59 +56,57 @@ export class App extends React.Component {
 
       e.preventDefault();
     });
-  }
+  }, []);
 
-  uploadFiles = (e) => {
-    this.setState({
-      image: window.URL.createObjectURL(e.target.files[0]),
-      hasError: false,
-    });
+  const uploadFiles = (e) => {
+    setImage(window.URL.createObjectURL(e.target.files[0]));
+    setHasError(false);
   };
 
-  getColors = (colors) => {
-    this.setState((state) => ({ colors: [...colors], hasError: false }));
+  const getColors = (colors) => {
+    setHasEroor(false);
   };
 
-  handleImage = (e) => {
-    this.isResponseOk(e.target.value);
-    this.setState({ image: e.target.value });
+  const handleImage = (e) => {
+    isResponseOk(e.target.value);
+    setImage(e.target.value);
   };
 
-  isResponseOk = (path) =>
+  const isResponseOk = (path) =>
     fetch(path)
-      .then((res) =>
-        res.status === 200 ? this.setState({ hasError: false }) : null
-      )
-      .catch((err) => (err ? this.setState({ hasError: true }) : null));
+      .then((res) => (res.status === 200 ? setHasError(false) : null))
+      .catch((err) => (err ? setHasError(true) : null));
 
-  thiefColor(img, index) {
-    const result = this.colorThief.getColorAsync(img).then((data) => {
-      const rgb = this.colorThief.convertColorRgb(data);
-      this.colors[index] = rgb;
-      this.setState({ colors: this.colors });
+  const thiefColor = (img, index) => {
+    const result = colorThief.getColorAsync(img).then((data) => {
+      const rgb = colorThief.convertColorRgb(data);
+      let q = colors;
+      q[index] = rgb;
+
+      setColors(q);
     });
-  }
+  };
 
-  thiefPalette(index) {
-    const data = this.colorThief.getPalette(this[`$img${index}`], 6);
+  const thiefPalette = (index) => {
+    const data = colorThief.getPalette(imageRef.current, 6);
     data.shift();
-    const rgb = this.colorThief.convertColorRgb(data);
-    this.palettes[index] = rgb;
-    this.setState({ palettes: this.palettes });
-  }
+    const rgb = colorThief.convertColorRgb(data);
+    let q = colors;
+    q[index] = rgb;
 
-  getItem(img, index, color, palette = []) {
-    !color && this.thiefColor(img, index);
+    setPalettes(q);
+  };
+
+  const getItem = (img, index, color, palette = []) => {
+    !color && thiefColor(img, index);
     console.log(color);
     return (
       <div className="itemRoot" key={`img-${index}`}>
         <img
-          ref={(dom) => {
-            this[`$img${index}`] = dom;
-          }}
+          ref={imageRef}
           src={img}
           style={{ display: 'none' }}
-          onLoad={() => this.thiefPalette(index)}
+          onLoad={() => thiefPalette(index)}
         />
 
         <div className="display-swatches">
@@ -133,64 +123,58 @@ export class App extends React.Component {
         </div>
       </div>
     );
-  }
+  };
 
-  render() {
-    const { colors, palettes } = this.state;
-
-    return (
-      <div
-        className="center-content"
-        style={{
-          flexDirection: 'column',
-        }}
-      >
-        <div className="ttt">
-          <div
-            className="image-container"
-            style={{
-              background: `url(${this.state.image})  center / contain no-repeat`,
-              backgroundSize: '100%',
-            }}
-          ></div>
-          <ColorExtractor
-            getColors={this.getColors}
-            onError={(error) => this.setState({ hasError: true })}
-          >
-            <img src={this.state.image} style={{ display: 'none' }} />
-          </ColorExtractor>
-          {this.state.colors.length > 0 ? (
-            <Swatches colors={this.state.colors} />
-          ) : null}
-        </div>
-        <div className="ttt">
-          <div
-            className="image-container"
-            style={{
-              background: `url(${this.state.image})  center / contain no-repeat`,
-              backgroundSize: '100%',
-            }}
-          ></div>
-          {this.getItem(this.state.image, 0, colors[0], palettes[0])}
-        </div>
-        <div className="ttt">
-          <div
-            className="image-container"
-            style={{
-              background: `url(${this.state.image})  center / contain no-repeat`,
-              backgroundSize: '100%',
-            }}
-          ></div>
-          <Card url={this.state.image} />
-        </div>
-
-        <SearchInput
-          imagePath={this.state.image === IMAGE ? '' : this.state.image}
-          handleImage={this.handleImage}
-          getColors={this.getColors}
-        />
-        <FileInput uploadFiles={this.uploadFiles} />
+  return (
+    <div
+      className="center-content"
+      style={{
+        flexDirection: 'column',
+      }}
+    >
+      <div className="ttt">
+        <div
+          className="image-container"
+          style={{
+            background: `url(${image})  center / contain no-repeat`,
+            backgroundSize: '100%',
+          }}
+        ></div>
+        <ColorExtractor
+          getColors={setColors}
+          onError={(error) => setHasError(true)}
+        >
+          <img src={image} style={{ display: 'none' }} />
+        </ColorExtractor>
+        {colors.length > 0 ? <Swatches colors={colors} /> : null}
       </div>
-    );
-  }
+      <div className="ttt">
+        <div
+          className="image-container"
+          style={{
+            background: `url(${image})  center / contain no-repeat`,
+            backgroundSize: '100%',
+          }}
+        ></div>
+        {getItem(image, 0, colors[0], palettes[0])}
+      </div>
+      <div className="ttt">
+        <div
+          className="image-container"
+          style={{
+            background: `url(${image})  center / contain no-repeat`,
+            backgroundSize: '100%',
+          }}
+        ></div>
+        <Palette url={image} />
+      </div>
+
+      <SearchInput
+        imagePath={image === IMAGE ? '' : image}
+        handleImage={handleImage}
+        getColors={getColors}
+      />
+      <FileInput uploadFiles={uploadFiles} />
+    </div>
+  );
 }

@@ -8,6 +8,7 @@ body {
   -moz-box-shadow: 10px 10px 9px -11px rgba(122, 121, 122, 1);
   box-shadow: 10px 10px 9px -11px rgba(122, 121, 122, 1); */
   width: 500px;
+  height: 500px;
 }
 
 .swatches {
